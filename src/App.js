@@ -7,7 +7,7 @@ function App() {
 
   return (
     <div style={{ textAlign: "center", padding: "20px" }}>
-      <h1>Flashing Strings</h1>
+      <h1>Oefening</h1>
       <div>
         <label>
           Select Level:{" "}

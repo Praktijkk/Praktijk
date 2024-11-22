@@ -12,7 +12,7 @@
     "web-vitals": "^2.1.4"
   },
   
-  "homepage": "http://miliexy.github.io/justArandomGame",
+  "homepage": "http://miliexy.github.io/justArandomBg",
 "scripts": {
   "start": "react-scripts start",
   "build": "react-scripts build",
