@@ -6,6 +6,8 @@ const StringFlasher = ({ speed, level, pause, isPaused, onFlash }) => {
   const [counter, setCounter] = useState(0); // Tracks the number of flashed words
   const [countdown, setCountdown] = useState(pause / 1000); // Countdown for the break in seconds
   const [internalPause, setInternalPause] = useState(false); // Internal pause state for countdown
+  const [totalTime, setTotalTime] = useState(0); // Total time for each sequence
+  const [imageTime, setImageTime] = useState(0); // Time for the image to be shown
 
   useEffect(() => {
     if (isPaused || internalPause) {
@@ -16,6 +18,7 @@ const StringFlasher = ({ speed, level, pause, isPaused, onFlash }) => {
       const newString = generateStringForLevel(level);
       setCurrentString(newString);
       setCounter((prevCounter) => prevCounter + 1);
+      setTotalTime((prevTime) => prevTime + speed); // Increment total time by speed
       if (onFlash) {
         onFlash(newString); // Call the onFlash function with the new string
       }
@@ -26,25 +29,33 @@ const StringFlasher = ({ speed, level, pause, isPaused, onFlash }) => {
 
   useEffect(() => {
     if (internalPause) {
-      const endTime = Date.now() + pause;
+      const endTime = Date.now() + imageTime;
       const timer = setInterval(() => {
         const remainingTime = Math.max(0, endTime - Date.now());
         setCountdown((remainingTime / 1000).toFixed(1)); // Show exact number even if under a second
         if (remainingTime <= 0) {
           setInternalPause(false); // End internal pause when countdown reaches 0
+          setTotalTime(0); // Reset total time
+          setImageTime(0); // Reset image time
           clearInterval(timer);
         }
       }, 100); // Update more frequently for better accuracy
 
       return () => clearInterval(timer); // Cleanup timer
     }
-  }, [internalPause, pause]);
+  }, [internalPause, imageTime]);
 
   useEffect(() => {
     if (counter > 0 && counter % 10 === 0) {
-      setInternalPause(true); // Pause after every 10 words
+      const remainingTime = pause - totalTime;
+      if (remainingTime > 0) {
+        setImageTime(remainingTime); // Set image time to remaining time
+        setInternalPause(true); // Pause after every 10 words
+      } else {
+        setTotalTime(0); // Reset total time if no remaining time
+      }
     }
-  }, [counter]);
+  }, [counter, totalTime, pause]);
 
   return (
     <div style={{ fontSize: "2em", textAlign: "center", marginTop: "20px", height: "100px", marginBottom:"20px" }}>
