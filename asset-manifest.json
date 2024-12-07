@@ -1,16 +1,15 @@
 {
   "files": {
     "main.css": "/Praktijk/static/css/main.e6c13ad2.css",
-    "main.js": "/Praktijk/static/js/main.0af5a93c.js",
+    "main.js": "/Praktijk/static/js/main.ec412027.js",
     "static/js/453.1702c3d7.chunk.js": "/Praktijk/static/js/453.1702c3d7.chunk.js",
-    "static/media/image.png": "/Praktijk/static/media/image.d6f399ef05d77e1dc976.png",
     "index.html": "/Praktijk/index.html",
     "main.e6c13ad2.css.map": "/Praktijk/static/css/main.e6c13ad2.css.map",
-    "main.0af5a93c.js.map": "/Praktijk/static/js/main.0af5a93c.js.map",
+    "main.ec412027.js.map": "/Praktijk/static/js/main.ec412027.js.map",
     "453.1702c3d7.chunk.js.map": "/Praktijk/static/js/453.1702c3d7.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.e6c13ad2.css",
-    "static/js/main.0af5a93c.js"
+    "static/js/main.ec412027.js"
   ]
 }
