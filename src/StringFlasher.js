@@ -1,71 +1,119 @@
 import React, { useState, useEffect } from "react";
+import pauseImage from './image.png'; // Import the pause image
 
-const StringFlasher = ({ speed, level }) => {
-  const [currentString, setCurrentString] = useState(
-    generateStringForLevel(level)
-  );
+const StringFlasher = ({ speed, level, pause, isPaused, onFlash }) => {
+  const [currentString, setCurrentString] = useState(generateStringForLevel(level));
   const [counter, setCounter] = useState(0); // Tracks the number of flashed words
-  const [isPaused, setIsPaused] = useState(false); // Tracks if the component is in the pause state
-  const [countdown, setCountdown] = useState(4); // Countdown for the break in seconds
+  const [countdown, setCountdown] = useState(pause / 1000); // Countdown for the break in seconds
+  const [internalPause, setInternalPause] = useState(false); // Internal pause state for countdown
 
   useEffect(() => {
-    if (isPaused) {
-      const timer = setInterval(() => {
-        setCountdown((prevCountdown) => {
-          if (prevCountdown <= 1) {
-            setIsPaused(false); // End pause when countdown reaches 0
-            return 4; // Reset countdown
-          }
-          return prevCountdown - 1;
-        });
-      }, 1000); // Countdown updates every second
-
-      return () => clearInterval(timer); // Cleanup timer
+    if (isPaused || internalPause) {
+      return; // Do nothing if paused by the button or internal pause
     }
 
     const interval = setInterval(() => {
-      setCurrentString(generateStringForLevel(level));
+      const newString = generateStringForLevel(level);
+      setCurrentString(newString);
       setCounter((prevCounter) => prevCounter + 1);
+      if (onFlash) {
+        onFlash(newString); // Call the onFlash function with the new string
+      }
     }, speed);
 
     return () => clearInterval(interval);
-  }, [speed, level, isPaused]);
+  }, [speed, level, isPaused, internalPause, onFlash]);
+
+  useEffect(() => {
+    if (internalPause) {
+      const endTime = Date.now() + pause;
+      const timer = setInterval(() => {
+        const remainingTime = Math.max(0, endTime - Date.now());
+        setCountdown((remainingTime / 1000).toFixed(1)); // Show exact number even if under a second
+        if (remainingTime <= 0) {
+          setInternalPause(false); // End internal pause when countdown reaches 0
+          clearInterval(timer);
+        }
+      }, 100); // Update more frequently for better accuracy
+
+      return () => clearInterval(timer); // Cleanup timer
+    }
+  }, [internalPause, pause]);
 
   useEffect(() => {
     if (counter > 0 && counter % 10 === 0) {
-      setIsPaused(true); // Pause after every 10 words
+      setInternalPause(true); // Pause after every 10 words
     }
   }, [counter]);
 
   return (
-    <div style={{ fontSize: "2em", textAlign: "center", marginTop: "20px" }}>
-      {isPaused ? `Taking a break... ${countdown}s` : currentString}
+    <div style={{ fontSize: "2em", textAlign: "center", marginTop: "20px", height: "100px", marginBottom:"20px" }}>
+      {isPaused || internalPause ? (
+        <img src={pauseImage} alt="Paused" style={{ width: "100px", height: "100px" }} />
+      ) : (
+        currentString
+      )}
     </div>
   );
 };
 
 const getRandomVowel = () => {
-  const vowels = "AEIOU".split("");
+  const vowels = ["a", "aa", "au", "e", "ee", "ei", "eu", "i", "ie", "ij", "o", "oe", "oo", "ou", "u", "ui", "uu"];
   return vowels[Math.floor(Math.random() * vowels.length)];
 };
 
 const getRandomConsonant = () => {
-  const consonants = "BCDFGHJKLMNPQRSTVWXYZ".split("");
+  const consonants = "bcdfghklmnpqrstvwxyz".split(""); // Update this line with Dutch consonants if needed
   return consonants[Math.floor(Math.random() * consonants.length)];
 };
+
+const cvcWords = [
+  "laag", "koud", "meel", "zon", "buur", "koor", "pit", "mees", "haar", "zuur", "boer", "poos",
+  "taak", "tik", "beer", "doos", "deuk", "foor", "guur", "mier", "haas", "jaar", "kool", "ril",
+  "leem", "maan", "noem", "paal", "raar", "lauw", "zool", "som", "kus", "teer", "veer", "gauw",
+  "waar", "roos", "boos", "lijk", "taal", "weer", "luik", "baas", "deel", "faam", "goot", "haag",
+  "dier", "jaag", "loom", "feit", "muur", "naar", "vos", "puur", "raam", "kees", "vies", "voor",
+  "waas", "zaag", "boog", "pas", "deeg", "huur", "ras", "maag", "win", "kuur", "pees", "roep",
+  "saus", "vaar", "wees", "les", "zeef", "kaas", "neep", "rook", "beuk", "duur", "buit", "geef",
+  "beet", "huid", "dool", "wijs", "geel", "been", "vaal", "bier", "nam", "week", "gaaf", "daas",
+  "goud", "baal", "tuk", "kaal", "boom", "teek", "laak", "hout", "heer", "met", "leer", "min",
+  "hoog", "gaar", "zout", "lees", "beek", "teen", "soep", "hoor", "look", "fel", "maal", "keel",
+  "meid", "veel", "zaal", "baar", "muis", "gaas", "lach", "pak", "geen", "kaak", "sip", "haan",
+  "laat", "peen", "weeg", "sul", "reed", "laaf", "koer", "laan", "maat", "kier", "beef", "pil",
+  "maak", "leef", "kaap", "peer", "noot", "zeer", "rap", "mat", "boot", "raad", "keer", "mouw",
+  "baat", "gil", "tier", "waak", "nies", "geur", "waag", "meer", "zuil", "zaad", "rood", "ken",
+  "paar", "put", "veeg", "faal", "hier", "waal", "boor", "meet", "keet", "bil", "dak", "tal",
+  "tas", "tak", "tam", "kat", "dag", "das", "man", "kap", "pan", "bad", "tel", "tem", "bel",
+  "den", "nel", "del", "vel", "hel", "men", "hem", "rek", "nek", "tol", "top", "tor", "dop",
+  "dom", "fop", "mop", "zot", "bom", "bon", "won", "dit", "dik", "lik", "mik", "sik", "kik",
+  "wis", "nis", "bil", "vil", "gil", "lis", "dun", "nul", "luk", "buk", "zul", "kun", "puk",
+  "vul", "ruk", "hun", "vaak", "daar", "baan", "zaak", "haal", "gaap", "raak", "daal", "teef",
+  "meen", "zeep", "neem", "zeem", "keek", "reep", "leeg", "leed", "heen", "neet", "woon", "toog",
+  "poot", "doof", "zoon", "hoop", "loop", "toon", "pook", "tuur", "fuut", "vuur", "duif", "duim",
+  "buik", "huis", "luis", "kuis", "puik", "duik", "ruik", "kuif", "deur", "reus", "neus", "peuk",
+  "geul", "zeur", "beul", "peul", "reuk", "saus", "pauw", "fout", "mouw", "dauw", "vouw", "touw",
+  "diep", "dief", "lief", "viel", "wier", "ziel", "zien", "hiel", "riep", "doek", "doel", "zoen",
+  "koel", "moer", "poel", "loep", "voel", "boen", "geit", "vijl", "zeil", "fijn", "reis", "hijs",
+  "zeis", "heil", "bijl", "pijl"
+];
+
+const ccvcWords = ["stol","stop","stof","staak","span","spat","","spar","spaak","spaar","spaan","knal","knap","knak","knol","knot","trom","trok","tros","mens","lomp","lacht","mast","mals","zacht","half","baard","zegt","palm","balk","kaars","tref","trek","tram","kraan","kraal","kraag","kruin","kruip","kras","krap","krat","kroon","","kroos","kroop","ster","stel","slak","slag","","slaan","slap","vlam","vlek","vlot","vloer","","vloot","bloes","blos","bleek","blik","slim","slip","vlag","vlam","vlak","blaat","blaar","kans","dans","kilt","kalk","puist","geest","post","land","rest","merg","feest","held","geld","valt","halt","mond","mild","rits","","sloot","slot","sluit","slaat","slijt","vlieg","vloog","vlug","vlaag","blaas","bloos","blad","blus","blies","blaf","blijf","bluf","bleef","bloot","slaap","sluis","sloop","sloom","slof","","slok","slik","bruin","pruik","dreun","praat","bril","prop","bloem","prik","knoop","spook","pluim","proef","knaap","troon","kleur","kruk","traan","drum","stoel","krijt","krom","spoor","spot","blik","brom","broek","troep","knor","trap","dril","ster","pret","spel","scheen","kort","trok","krul","pels","blus","kurk","kreuk","vlek","mens","hurk","vers","druk","graaf","graas","graat","groet","groen","groep","gras","grap","graf","grot","grom","grof","brok","bros","pruim","pruik","pruil","draaf","draak","draag","droom","droog","droop","speel","speer","speet","spel","sper","spin","spit","spil","steen","steek","lijst","lijkt","stil","stik","step","stem","stal","stap","staf","staat","staaf","staaf","staal","stook","stoom","bleef","bloem","blaar","blok","glas","gluur","","mals","hals","melk","zeurt","mest","kast","help","hark","merk","zaagt","poets","mast","kalf","park","darm","tiert","merg","beest","","pest","koets","leest","helm","warm","kaft","klop","klok","klos","klas","klap","klam","klaas","klaar","klage","plat","plak","zweep","zweef","zweer","snoep","snoek","snoes","smeet","smeer","smeek","klim","klip","vlam","klik","pips","berg","zorg","schop","soms","gems","test","schor","schil","schip","schik","korf","durf","vonk","plak","bleek","denk","steun","pluis","slijp","pluk","rups","stuur","hark","verf","flik","slak","vrag","glas","fruit","pont","vroeg","dwaal","kluif","snuit","hert","","smul","kleur","fluit","vlug","kort","gips","plan","braam","grap","fris","grijs","graf","druif","prul","woest","haast","prul","drop","stik","kers","rasp","wilg","slap","graaf","draf","druk","knip","bruin","tril","kraal","pomp","lomp","step","wesp","nors","snaar","bots","stak","kaats","staak","naars","post","kust","rups","sleep","sliep","sloep","sluip","bloes","bloot","bleek","blik","blaat","blaar","blaas","bloos","blos","blus","blies","blaf","blijf","bluf","bleef","bloem","blok","","braam","bruin","bril","broek","brok","broos","breek","braaf","bros","brief","broer","bron","braak","","dwaal","dweil","dweep","","draaf","draak","draag","droom","droog","druif","drop","draf","druk","dreun","drijf","drum","","flik","fluit","fruit","fris","friet","","glas","glad","gleuf","gloed","gleed","","grap","grijs","graf","graaf","graas","graat","groet","groen","groep","gras","grot","grom","grof","","knal","knap","knak","knol","knot","knip","knoop","knaap","kneep","knijp","","kraan","kraal","kraag","kruin","kruip","kras","krab","krat","kroon","kroop","kruk","krijt","krom","krul","kreuk","","klop","klok","klos","klas","klap","klam","klaar","klaag","klim","klif","klik","kluif","kleur","","plat","plak","pluis","pluk","plan","pluim","","prul","pruik","praat","pret","prop","prik","proef","pruim","","stop","stof","stok","steek","stil","stik","step","stem","stal","stap","staf","staat","staaf","staal","stook","stoom","ster","stel","steun","stuur","stak","stoel","steen","","span","spat","spar","spaak","spaar","spaan","spoor","spot","spel","speel","speer","spin","spit","","slak","slag","slaan","slap","slim","slip","slijp","sleep","sliep","sloep","sluip","sloot","slot","sluit","slaat","slijt","slaap","sluis","sloom","slok","slik","","spook","speer","spoor","speel","speur","","snoep","snoek","snoes","snuit","snaar","","smeet","smeer","smeek","smul","","schop","schor","schil","schip","schik","scheef","scheen","schep","schaap","","trom","trok","tros","tref","trek","trein","traan","trui","troep","trap","","vlam","vlek","vlot","vloer","vloot","vlag","vlak","vlug","vlieg","vloog","","vraag","vroeg","vries","vroor","","zweep","zweef","zweer","zwaar","zweet","zwijn","","kaft","hoofd","leeft","beeft","weeft","hoeft","dooft","zoeft","","larf","verf","korf","durf","werf","kerf","","half","kalf","wolf","elf","zalf","zelf","","zaagt","lacht","zacht","zegt","wacht","ligt","lucht","vecht","zucht","buigt","vocht","zuigt","legt","kucht","vacht","macht","veegt","weegt","voegt","wiegt","","lijkt","reikt","bukt","kijkt","kookt","bakt","dekt","lekt","maakt","ruikt","zoekt","","denk","vonk","pink","vink","donk","bink","kink","zink","","hark","merk","park","kurk","kerk","werk","vork","jurk","hurk","merk","perk","","melk","balk","kalk","kolk","dolk","volk","valk","kelk","wolk","","hals","mals","pels","pols","vals","wals","hels","","held","kilt","geld","valt","halt","mild","milt","","wilg","telg","galg","walg","velg","","help","tulp","pulp","welp","hulp","","palm","helm","zalm","galm","kalm","film","","darm","warm","ferm","worm","vorm","norm","berm","term","","lomp","pomp","kamp","ramp","lamp","romp","","soms","gems","doms","","komt","kamt","gomt","somt","hemd","remt","rijmt","lijmt","","land","mond","pond","hand","tand","want","lint","rond","hond","munt","wint","vind","pand","rand","band","lont","mand","","mens","kans","dans","gans","lens","pens","bons","wens","mans","","gips","pips","rups","mops","paps","tips","","hapt","piept","wipt","dopt","tapt","kapt","lapt","mept","hoopt","koopt","gaapt","loopt","","kaars","kers","vers","nors","pers","hars","bars","beurs","","baard","tiert","hert","kort","zeurt","beurt","keurt","kaart","maart","waard","leert","veert","paard","haard","","merg","berg","zorg","terg","","mest","kast","mast","beest","leest","pest","puist","joost","rest","feest","post","lijst","test","woest","haast","kust","kist","","rasp","wesp","hesp","gesp","","poets","koets","bots","rits","kaats","fiets","muts","toets","loods","reeds","knots","klets"];
+
+const vcWords = cvcWords.map(word => word.slice(1)); // Remove the first letter for VC
+const cvWords = cvcWords.map(word => word.slice(0, -1)); // Remove the last letter for CV
 
 const generateStringForLevel = (level) => {
   switch (level) {
     case 1:
       return getRandomVowel();
     case 2:
-      return getRandomVowel() + getRandomConsonant();
+      return vcWords[Math.floor(Math.random() * vcWords.length)]; // Use VC words for level 2
     case 3:
-      return getRandomConsonant() + getRandomVowel();
-    case 4:
-      return getRandomConsonant() + getRandomConsonant() + getRandomVowel();
+      return cvWords[Math.floor(Math.random() * cvWords.length)]; // Use CV words for level 3
     case 5:
-      return getRandomConsonant() + getRandomVowel() + getRandomConsonant();
+      return ccvcWords[Math.floor(Math.random() * ccvcWords.length)]; // Use CVCC words for level 4
+    case 4:
+      return cvcWords[Math.floor(Math.random() * cvcWords.length)]; // Use CVC words for level 5
     default:
       return "";
   }
