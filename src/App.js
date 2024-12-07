@@ -53,7 +53,7 @@ function App() {
           </select>
         </label>
       </div>
-      <StringFlasher key={sequenceKey} speed={speed / 2} level={level} totalTimer={speed * 2} isPaused={isPaused} onSequenceEnd={handleSequenceEnd} />
+      <StringFlasher key={sequenceKey} speed={speed } level={level} totalTimer={speed * 2} isPaused={isPaused} onSequenceEnd={handleSequenceEnd} />
       <div style={{ marginTop: "20px" }}>
         <label>
           Speed (ms):{" "}
