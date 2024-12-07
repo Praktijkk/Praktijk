@@ -1,56 +1,17 @@
 import React, { useState, useEffect } from "react";
 
-const StringFlasher = ({ speed, level, totalTimer, isPaused, onFlash, onSequenceEnd }) => {
+const StringFlasher = ({ speed, level, totalTimer, currentTimer }) => {
   const [currentString, setCurrentString] = useState(generateStringForLevel(level));
-  const [counter, setCounter] = useState(0); // Tracks the number of flashed words
-  const [internalPause, setInternalPause] = useState(false); // Internal pause state for countdown
-  const [totalTime, setTotalTime] = useState(0); // Total time for each sequence
 
   useEffect(() => {
-    if (isPaused || internalPause) {
-      return; // Do nothing if paused by the button or internal pause
+    if (currentTimer === 0) {
+      setCurrentString(generateStringForLevel(level)); // Change the word every 2x speed time
     }
-
-    const interval = setInterval(() => {
-      const newString = generateStringForLevel(level);
-      setCurrentString(newString);
-      setCounter((prevCounter) => prevCounter + 1);
-      setTotalTime((prevTime) => prevTime + speed); // Increment total time by speed
-      if (onFlash) {
-        onFlash(newString); // Call the onFlash function with the new string
-      }
-    }, speed);
-
-    return () => clearInterval(interval);
-  }, [speed, level, isPaused, internalPause, onFlash]);
-
-  useEffect(() => {
-    if (internalPause) {
-      const endTime = Date.now() + totalTimer;
-      const timer = setInterval(() => {
-        const remainingTime = Math.max(0, endTime - Date.now());
-        if (remainingTime <= 0) {
-          setInternalPause(false); // End internal pause when countdown reaches 0
-          setTotalTime(0); // Reset total time
-          if (onSequenceEnd) {
-            onSequenceEnd(); // Call onSequenceEnd at the end of each sequence
-          }
-          clearInterval(timer);
-        }
-      }, 100); // Update more frequently for better accuracy
-
-      return () => clearInterval(timer); // Cleanup timer
-    }
-  }, [internalPause, totalTimer, onSequenceEnd]);
-
-  useEffect(() => {
-    if (counter > 0 && counter % 10 === 0) {
-      setInternalPause(true); // Pause after every 10 words
-    }
-  }, [counter]);
+  }, [currentTimer, level]);
 
   return (
-    <div style={{ fontSize: "2em", textAlign: "center", marginTop: "20px", height: "100px", marginBottom:"20px", color: totalTime >= totalTimer / 2 ? "red" : "black" }}>
+    <div style={{ fontSize: "2em", textAlign: "center", 
+    marginTop: "20px", height: "100px", marginBottom:"20px", color: currentTimer >= totalTimer / 2 ? "red" : "black" }}>
       {currentString}
     </div>
   );

@@ -4,34 +4,25 @@ import StringFlasher from "./StringFlasher";
 function App() {
   const [speed, setSpeed] = useState(1000); // Default: 1000ms (1 second)
   const [level, setLevel] = useState(1); // Default: Level 1
-  const [isPaused, setIsPaused] = useState(false); // Add pause state
-  const [sequenceKey, setSequenceKey] = useState(0); // Key to reset the sequence
   const [currentTimer, setCurrentTimer] = useState(0); // Timer for the current sequence
 
   useEffect(() => {
     let timer;
-    if (!isPaused) {
-      timer = setInterval(() => {
-        setCurrentTimer((prevTime) => {
-          if (prevTime >= speed * 2) {
-            handleSequenceEnd(); // Reset the sequence if the total timer reaches 2x the speed timer
-            return 0;
-          }
-          return prevTime + 100; // Increment by 100ms
-        });
-      }, 100); // Update every 100ms
-    }
-    return () => clearInterval(timer);
-  }, [isPaused, sequenceKey, speed]);
+    timer = setInterval(() => {
+      setCurrentTimer((prevTime) => {
+        if (prevTime >= speed * 2) {
+          return 0; // Reset the timer if the total timer reaches 2x the speed timer
+        }
+        return prevTime + 100; // Increment by 100ms
+      });
+    }, 100); // Update every 100ms
 
-  const handleSequenceEnd = () => {
-    setSequenceKey(prevKey => prevKey + 1); // Increment the key to reset the sequence
-    setCurrentTimer(0); // Reset the current timer
-  };
+    return () => clearInterval(timer);
+  }, [speed]);
 
   const handleSpeedChange = (e) => {
     setSpeed(Number(e.target.value));
-    handleSequenceEnd(); // Reset the sequence when speed is changed
+    setCurrentTimer(0); // Reset the timer when speed is changed
   };
 
   return (
@@ -53,7 +44,7 @@ function App() {
           </select>
         </label>
       </div>
-      <StringFlasher key={sequenceKey} speed={speed} level={level} totalTimer={speed * 2} isPaused={isPaused} onSequenceEnd={handleSequenceEnd} />
+      <StringFlasher speed={speed} level={level} totalTimer={speed * 2} currentTimer={currentTimer} />
       <div style={{ marginTop: "20px" }}>
         <label>
           Speed (ms):{" "}
@@ -65,14 +56,6 @@ function App() {
             style={{ fontSize: "1em", padding: "5px", marginLeft: "10px" }}
           />
         </label>
-      </div>
-      <div style={{ marginTop: "20px" }}>
-        <button
-          onClick={() => setIsPaused(!isPaused)}
-          style={{ fontSize: "1em", padding: "10px", marginTop: "10px" }}
-        >
-          {isPaused ? "Resume" : "Pause"}
-        </button>
       </div>
       <div style={{ position: "fixed", bottom: "10px", left: "10px", fontSize: "1em" }}>
         Current Timer: {currentTimer}ms
