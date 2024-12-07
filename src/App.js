@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import StringFlasher from "./StringFlasher";
 
 function App() {
-  const [speed, setSpeed] = useState(10000); // Default: 10000ms (10 seconds)
+  const [speed, setSpeed] = useState(1000); // Default: 1000ms (1 second)
   const [level, setLevel] = useState(1); // Default: Level 1
   const [isPaused, setIsPaused] = useState(false); // Add pause state
   const [sequenceKey, setSequenceKey] = useState(0); // Key to reset the sequence
@@ -53,7 +53,7 @@ function App() {
           </select>
         </label>
       </div>
-      <StringFlasher key={sequenceKey} speed={speed } level={level} totalTimer={speed * 2} isPaused={isPaused} onSequenceEnd={handleSequenceEnd} />
+      <StringFlasher key={sequenceKey} speed={speed} level={level} totalTimer={speed * 2} isPaused={isPaused} onSequenceEnd={handleSequenceEnd} />
       <div style={{ marginTop: "20px" }}>
         <label>
           Speed (ms):{" "}

@@ -15,11 +15,11 @@ const StringFlasher = ({ speed, level, totalTimer, isPaused, onFlash, onSequence
       const newString = generateStringForLevel(level);
       setCurrentString(newString);
       setCounter((prevCounter) => prevCounter + 1);
-      setTotalTime((prevTime) => prevTime + speed / 10); // Increment total time by speed / 10
+      setTotalTime((prevTime) => prevTime + speed); // Increment total time by speed
       if (onFlash) {
         onFlash(newString); // Call the onFlash function with the new string
       }
-    }, speed / 10);
+    }, speed);
 
     return () => clearInterval(interval);
   }, [speed, level, isPaused, internalPause, onFlash]);
@@ -45,12 +45,12 @@ const StringFlasher = ({ speed, level, totalTimer, isPaused, onFlash, onSequence
 
   useEffect(() => {
     if (counter > 0 && counter % 10 === 0) {
-      setInternalPause(true); // Pause after every 20 words (10 colored, 10 white)
+      setInternalPause(true); // Pause after every 10 words
     }
   }, [counter]);
 
   return (
-    <div style={{ fontSize: "2em", textAlign: "center", marginTop: "20px", height: "100px", marginBottom:"20px", color: internalPause ? "white" : "black" }}>
+    <div style={{ fontSize: "2em", textAlign: "center", marginTop: "20px", height: "100px", marginBottom:"20px", color: totalTime >= totalTimer / 2 ? "red" : "black" }}>
       {currentString}
     </div>
   );
