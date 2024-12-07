@@ -1,13 +1,10 @@
 import React, { useState, useEffect } from "react";
-import pauseImage from './image.png'; // Import the pause image
 
-const StringFlasher = ({ speed, level, pause, isPaused, onFlash, onSequenceEnd }) => {
+const StringFlasher = ({ speed, level, totalTimer, isPaused, onFlash, onSequenceEnd }) => {
   const [currentString, setCurrentString] = useState(generateStringForLevel(level));
   const [counter, setCounter] = useState(0); // Tracks the number of flashed words
-  const [countdown, setCountdown] = useState(pause / 1000); // Countdown for the break in seconds
   const [internalPause, setInternalPause] = useState(false); // Internal pause state for countdown
   const [totalTime, setTotalTime] = useState(0); // Total time for each sequence
-  const [imageTime, setImageTime] = useState(0); // Time for the image to be shown
 
   useEffect(() => {
     if (isPaused || internalPause) {
@@ -18,25 +15,23 @@ const StringFlasher = ({ speed, level, pause, isPaused, onFlash, onSequenceEnd }
       const newString = generateStringForLevel(level);
       setCurrentString(newString);
       setCounter((prevCounter) => prevCounter + 1);
-      setTotalTime((prevTime) => prevTime ); // Increment total time by speed
+      setTotalTime((prevTime) => prevTime + speed / 10); // Increment total time by speed / 10
       if (onFlash) {
         onFlash(newString); // Call the onFlash function with the new string
       }
-    }, speed);
+    }, speed / 10);
 
     return () => clearInterval(interval);
   }, [speed, level, isPaused, internalPause, onFlash]);
 
   useEffect(() => {
     if (internalPause) {
-      const endTime = Date.now() + imageTime;
+      const endTime = Date.now() + totalTimer;
       const timer = setInterval(() => {
         const remainingTime = Math.max(0, endTime - Date.now());
-        setCountdown((remainingTime / 1000).toFixed(1)); // Show exact number even if under a second
         if (remainingTime <= 0) {
           setInternalPause(false); // End internal pause when countdown reaches 0
           setTotalTime(0); // Reset total time
-          setImageTime(0); // Reset image time
           if (onSequenceEnd) {
             onSequenceEnd(); // Call onSequenceEnd at the end of each sequence
           }
@@ -46,27 +41,17 @@ const StringFlasher = ({ speed, level, pause, isPaused, onFlash, onSequenceEnd }
 
       return () => clearInterval(timer); // Cleanup timer
     }
-  }, [internalPause, imageTime, onSequenceEnd]);
+  }, [internalPause, totalTimer, onSequenceEnd]);
 
   useEffect(() => {
     if (counter > 0 && counter % 10 === 0) {
-      const remainingTime = pause - totalTime;
-      if (remainingTime > 0) {
-        setImageTime(remainingTime); // Set image time to remaining time
-        setInternalPause(true); // Pause after every 10 words
-      } else {
-        setTotalTime(0); // Reset total time if no remaining time
-      }
+      setInternalPause(true); // Pause after every 20 words (10 colored, 10 white)
     }
-  }, [counter, totalTime, pause]);
+  }, [counter]);
 
   return (
-    <div style={{ fontSize: "2em", textAlign: "center", marginTop: "20px", height: "100px", marginBottom:"20px" }}>
-      {isPaused || internalPause ? (
-        <img src={pauseImage} alt="Paused" style={{ width: "100px", height: "100px" }} />
-      ) : (
-        currentString
-      )}
+    <div style={{ fontSize: "2em", textAlign: "center", marginTop: "20px", height: "100px", marginBottom:"20px", color: internalPause ? "white" : "black" }}>
+      {currentString}
     </div>
   );
 };

@@ -4,30 +4,34 @@ import StringFlasher from "./StringFlasher";
 function App() {
   const [speed, setSpeed] = useState(10000); // Default: 10000ms (10 seconds)
   const [level, setLevel] = useState(1); // Default: Level 1
-  const [pause, setPause] = useState(4000); // Default: 4000ms (4 seconds)
   const [isPaused, setIsPaused] = useState(false); // Add pause state
   const [sequenceKey, setSequenceKey] = useState(0); // Key to reset the sequence
-  const [totalTime, setTotalTime] = useState(0); // Timer for the total time
+  const [currentTimer, setCurrentTimer] = useState(0); // Timer for the current sequence
 
   useEffect(() => {
     let timer;
     if (!isPaused) {
       timer = setInterval(() => {
-        setTotalTime((prevTime) => {
-          if (prevTime >= pause) {
-            clearInterval(timer);
-            return pause;
+        setCurrentTimer((prevTime) => {
+          if (prevTime >= speed * 2) {
+            handleSequenceEnd(); // Reset the sequence if the total timer reaches 2x the speed timer
+            return 0;
           }
           return prevTime + 100; // Increment by 100ms
         });
       }, 100); // Update every 100ms
     }
     return () => clearInterval(timer);
-  }, [isPaused, pause, sequenceKey]);
+  }, [isPaused, sequenceKey, speed]);
 
   const handleSequenceEnd = () => {
     setSequenceKey(prevKey => prevKey + 1); // Increment the key to reset the sequence
-    setTotalTime(0); // Reset the total time
+    setCurrentTimer(0); // Reset the current timer
+  };
+
+  const handleSpeedChange = (e) => {
+    setSpeed(Number(e.target.value));
+    handleSequenceEnd(); // Reset the sequence when speed is changed
   };
 
   return (
@@ -49,27 +53,15 @@ function App() {
           </select>
         </label>
       </div>
-      <StringFlasher key={sequenceKey} speed={speed / 10} level={level} pause={pause} isPaused={isPaused} onSequenceEnd={handleSequenceEnd} />
+      <StringFlasher key={sequenceKey} speed={speed / 2} level={level} totalTimer={speed * 2} isPaused={isPaused} onSequenceEnd={handleSequenceEnd} />
       <div style={{ marginTop: "20px" }}>
         <label>
           Speed (ms):{" "}
           <input
             type="number"
             value={speed}
-            onChange={(e) => setSpeed(Number(e.target.value))}
+            onChange={handleSpeedChange}
             placeholder="Speed in ms"
-            style={{ fontSize: "1em", padding: "5px", marginLeft: "10px" }}
-          />
-        </label>
-      </div>
-      <div style={{ marginTop: "20px" }}>
-        <label>
-          Pause (ms):{" "}
-          <input
-            type="number"
-            value={pause}
-            onChange={(e) => setPause(Number(e.target.value))}
-            placeholder="Pause in ms"
             style={{ fontSize: "1em", padding: "5px", marginLeft: "10px" }}
           />
         </label>
@@ -81,6 +73,9 @@ function App() {
         >
           {isPaused ? "Resume" : "Pause"}
         </button>
+      </div>
+      <div style={{ position: "fixed", bottom: "10px", left: "10px", fontSize: "1em" }}>
+        Current Timer: {currentTimer}ms
       </div>
     </div>
   );
