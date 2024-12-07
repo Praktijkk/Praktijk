@@ -11,7 +11,7 @@ const StringFlasher = ({ speed, level, totalTimer, currentTimer }) => {
 
   return (
     <div style={{ fontSize: "2em", textAlign: "center", 
-    marginTop: "20px", height: "100px", marginBottom:"20px", color: currentTimer >= totalTimer / 2 ? "red" : "black" }}>
+    marginTop: "20px", height: "100px", marginBottom:"20px", color: currentTimer >= totalTimer / 2 ? "white" : "black" }}>
       {currentString}
     </div>
   );
