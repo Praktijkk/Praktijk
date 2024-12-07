@@ -2,14 +2,33 @@ import React, { useState, useEffect } from "react";
 import StringFlasher from "./StringFlasher";
 
 function App() {
-  const [speed, setSpeed] = useState(1000); // Default: 1000ms (1 second)
+  const [speed, setSpeed] = useState(10000); // Default: 10000ms (10 seconds)
   const [level, setLevel] = useState(1); // Default: Level 1
   const [pause, setPause] = useState(4000); // Default: 4000ms (4 seconds)
   const [isPaused, setIsPaused] = useState(false); // Add pause state
+  const [sequenceKey, setSequenceKey] = useState(0); // Key to reset the sequence
+  const [totalTime, setTotalTime] = useState(0); // Timer for the total time
 
   useEffect(() => {
-    // This effect will run whenever the pause state changes
-  }, [pause]);
+    let timer;
+    if (!isPaused) {
+      timer = setInterval(() => {
+        setTotalTime((prevTime) => {
+          if (prevTime >= pause) {
+            clearInterval(timer);
+            return pause;
+          }
+          return prevTime + 100; // Increment by 100ms
+        });
+      }, 100); // Update every 100ms
+    }
+    return () => clearInterval(timer);
+  }, [isPaused, pause, sequenceKey]);
+
+  const handleSequenceEnd = () => {
+    setSequenceKey(prevKey => prevKey + 1); // Increment the key to reset the sequence
+    setTotalTime(0); // Reset the total time
+  };
 
   return (
     <div style={{ textAlign: "center", padding: "20px" }}>
@@ -30,7 +49,7 @@ function App() {
           </select>
         </label>
       </div>
-      <StringFlasher key={pause} speed={speed} level={level} pause={pause} isPaused={isPaused} />
+      <StringFlasher key={sequenceKey} speed={speed / 10} level={level} pause={pause} isPaused={isPaused} onSequenceEnd={handleSequenceEnd} />
       <div style={{ marginTop: "20px" }}>
         <label>
           Speed (ms):{" "}

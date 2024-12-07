@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import pauseImage from './image.png'; // Import the pause image
 
-const StringFlasher = ({ speed, level, pause, isPaused, onFlash }) => {
+const StringFlasher = ({ speed, level, pause, isPaused, onFlash, onSequenceEnd }) => {
   const [currentString, setCurrentString] = useState(generateStringForLevel(level));
   const [counter, setCounter] = useState(0); // Tracks the number of flashed words
   const [countdown, setCountdown] = useState(pause / 1000); // Countdown for the break in seconds
@@ -18,7 +18,7 @@ const StringFlasher = ({ speed, level, pause, isPaused, onFlash }) => {
       const newString = generateStringForLevel(level);
       setCurrentString(newString);
       setCounter((prevCounter) => prevCounter + 1);
-      setTotalTime((prevTime) => prevTime + speed); // Increment total time by speed
+      setTotalTime((prevTime) => prevTime ); // Increment total time by speed
       if (onFlash) {
         onFlash(newString); // Call the onFlash function with the new string
       }
@@ -37,13 +37,16 @@ const StringFlasher = ({ speed, level, pause, isPaused, onFlash }) => {
           setInternalPause(false); // End internal pause when countdown reaches 0
           setTotalTime(0); // Reset total time
           setImageTime(0); // Reset image time
+          if (onSequenceEnd) {
+            onSequenceEnd(); // Call onSequenceEnd at the end of each sequence
+          }
           clearInterval(timer);
         }
       }, 100); // Update more frequently for better accuracy
 
       return () => clearInterval(timer); // Cleanup timer
     }
-  }, [internalPause, imageTime]);
+  }, [internalPause, imageTime, onSequenceEnd]);
 
   useEffect(() => {
     if (counter > 0 && counter % 10 === 0) {
@@ -121,10 +124,10 @@ const generateStringForLevel = (level) => {
       return vcWords[Math.floor(Math.random() * vcWords.length)]; // Use VC words for level 2
     case 3:
       return cvWords[Math.floor(Math.random() * cvWords.length)]; // Use CV words for level 3
-    case 5:
-      return ccvcWords[Math.floor(Math.random() * ccvcWords.length)]; // Use CVCC words for level 4
     case 4:
-      return cvcWords[Math.floor(Math.random() * cvcWords.length)]; // Use CVC words for level 5
+      return cvcWords[Math.floor(Math.random() * cvcWords.length)]; // Use CVC words for level 4
+    case 5:
+      return ccvcWords[Math.floor(Math.random() * ccvcWords.length)]; // Use CVCC words for level 5
     default:
       return "";
   }
