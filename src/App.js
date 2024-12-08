@@ -53,8 +53,8 @@ function App() {
             style={{ fontSize: "1em", padding: "5px", margin: "10px" }}
           >
             <option value={1}>Level 1: Vowel</option>
-            <option value={2}>Level 2: Consonant-Vowel</option>
-            <option value={3}>Level 3: Vowel-Consonant</option>
+            <option value={2}>Level 2: Vowel-Consonant</option>
+            <option value={3}>Level 3: Consonant-Vowel</option>
             <option value={4}>Level 4: Consonant-Consonant-Vowel</option>
             <option value={5}>Level 5: Vowel-Consonant-Consonant</option>
             <option value={6}>Level 6: Consonant-Vowel-Consonant</option>

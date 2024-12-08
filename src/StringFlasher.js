@@ -84,9 +84,9 @@ const generateStringForLevel = (level) => {
     case 1:
       return getRandomVowel();
     case 2:
-        return cvWords[Math.floor(Math.random() * cvWords.length)]; // Use CV words for level 2
+      return vcWords[Math.floor(Math.random() * vcWords.length)]; // Use VC words for level 3
     case 3:
-        return vcWords[Math.floor(Math.random() * vcWords.length)]; // Use VC words for level 3
+      return cvWords[Math.floor(Math.random() * cvWords.length)]; // Use CV words for level 2
     case 4:
       return ccvWords[Math.floor(Math.random() * ccvWords.length)]; // Use CCV words for level 4
     case 5:
