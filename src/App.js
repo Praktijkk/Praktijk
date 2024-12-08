@@ -63,7 +63,7 @@ function App() {
       </div>
       {showImage ? (
         <div>
-          <img src={image} alt="Sequence End" style={{ width: "auto", height: "auto" }} />
+          <img src={image} style={{ width: "auto", height: "auto" }} />
         </div>
       ) : (
         <StringFlasher speed={speed} level={level} totalTimer={speed * 2} currentTimer={currentTimer} onSequenceEnd={handleSequenceEnd} />
