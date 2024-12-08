@@ -3,7 +3,7 @@ import StringFlasher from "./StringFlasher";
 import image from "./image.png";
 
 function App() {
-  const [speed, setSpeed] = useState(1000); // Default: 1000ms (1 second)
+  const [speed, setSpeed] = useState(2000); // Default: 1000ms (1 second)
   const [level, setLevel] = useState(1); // Default: Level 1
   const [currentTimer, setCurrentTimer] = useState(0); // Timer for the current sequence
   const [showImage, setShowImage] = useState(false);

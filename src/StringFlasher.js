@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from "react";
 
 const StringFlasher = ({ speed, level, totalTimer, currentTimer, onSequenceEnd }) => {
-  const [currentString, setCurrentString] = useState(generateStringForLevel(level));
+  const [currentString, setCurrentString] = useState(generateStringForLevel(level, ""));
   const [sequenceCount, setSequenceCount] = useState(0);
 
   useEffect(() => {
     if (currentTimer === 0) {
-      setCurrentString(generateStringForLevel(level));
+      setCurrentString((prevString) => generateStringForLevel(level, prevString));
       setSequenceCount((prevCount) => {
-        if (prevCount >= 11) {
+        if (prevCount >= 10) {
           onSequenceEnd();
           return 0;
         }
@@ -79,23 +79,33 @@ const cvWords = cvcWords.map(word => word.slice(0, -1)); // Remove the last lett
 const vccWords = cvccWords.map(word => word.slice(1)); // Remove the first letter for VCC
 const ccvWords = ccvcWords.map(word => word.slice(0, -1)); // Remove the last letter for CCV
 
-const generateStringForLevel = (level) => {
-  switch (level) {
-    case 1:
-      return getRandomVowel();
-    case 2:
-      return vcWords[Math.floor(Math.random() * vcWords.length)]; // Use VC words for level 3
-    case 3:
-      return cvWords[Math.floor(Math.random() * cvWords.length)]; // Use CV words for level 2
-    case 4:
-      return ccvWords[Math.floor(Math.random() * ccvWords.length)]; // Use CCV words for level 4
-    case 5:
-        return vccWords[Math.floor(Math.random() * vccWords.length)]; // Use VCC words for level 5
-    case 6:
-      return cvcWords[Math.floor(Math.random() * cvcWords.length)]; // Use CVC words for level 6
-    default:
-      return "";
-  }
+const generateStringForLevel = (level, previousString) => {
+  let newString;
+  do {
+    switch (level) {
+      case 1:
+        newString = getRandomVowel();
+        break;
+      case 2:
+        newString = vcWords[Math.floor(Math.random() * vcWords.length)]; // Use VC words for level 3
+        break;
+      case 3:
+        newString = cvWords[Math.floor(Math.random() * cvWords.length)]; // Use CV words for level 2
+        break;
+      case 4:
+        newString = ccvWords[Math.floor(Math.random() * ccvWords.length)]; // Use CCV words for level 4
+        break;
+      case 5:
+        newString = vccWords[Math.floor(Math.random() * vccWords.length)]; // Use VCC words for level 5
+        break;
+      case 6:
+        newString = cvcWords[Math.floor(Math.random() * cvcWords.length)]; // Use CVC words for level 6
+        break;
+      default:
+        newString = "";
+    }
+  } while (newString === previousString);
+  return newString;
 };
 
 export default StringFlasher;
