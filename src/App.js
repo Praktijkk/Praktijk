@@ -1,28 +1,44 @@
 import React, { useState, useEffect } from "react";
 import StringFlasher from "./StringFlasher";
+import image from "./image.png";
 
 function App() {
   const [speed, setSpeed] = useState(1000); // Default: 1000ms (1 second)
   const [level, setLevel] = useState(1); // Default: Level 1
   const [currentTimer, setCurrentTimer] = useState(0); // Timer for the current sequence
+  const [showImage, setShowImage] = useState(false);
+  const [totalTime, setTotalTime] = useState(0); // Total time for the sequence
 
   useEffect(() => {
     let timer;
-    timer = setInterval(() => {
-      setCurrentTimer((prevTime) => {
-        if (prevTime >= speed * 2) {
-          return 0; // Reset the timer if the total timer reaches 2x the speed timer
-        }
-        return prevTime + 100; // Increment by 100ms
-      });
-    }, 100); // Update every 100ms
+    if (!showImage) {
+      timer = setInterval(() => {
+        setCurrentTimer((prevTime) => {
+          if (prevTime >= speed * 2) {
+            return 0; // Reset the timer if the total timer reaches 2x the speed timer
+          }
+          return prevTime + 100; // Increment by 100ms
+        });
+        setTotalTime((prevTime) => prevTime + 100); // Increment total time by 100ms
+      }, 100); // Update every 100ms
+    }
 
     return () => clearInterval(timer);
-  }, [speed]);
+  }, [speed, showImage]);
 
   const handleSpeedChange = (e) => {
     setSpeed(Number(e.target.value));
     setCurrentTimer(0); // Reset the timer when speed is changed
+    setTotalTime(0); // Reset the total time when speed is changed
+  };
+
+  const handleSequenceEnd = () => {
+    setShowImage(true);
+    setTimeout(() => {
+      setShowImage(false);
+      setCurrentTimer(0);
+      setTotalTime(0); // Reset the total time when the image is shown
+    }, 4000); // Show image for 4 seconds
   };
 
   return (
@@ -45,7 +61,13 @@ function App() {
           </select>
         </label>
       </div>
-      <StringFlasher speed={speed} level={level} totalTimer={speed * 2} currentTimer={currentTimer} />
+      {showImage ? (
+        <div>
+          <img src={image} alt="Sequence End" style={{ width: "auto", height: "auto" }} />
+        </div>
+      ) : (
+        <StringFlasher speed={speed} level={level} totalTimer={speed * 2} currentTimer={currentTimer} onSequenceEnd={handleSequenceEnd} />
+      )}
       <div style={{ marginTop: "20px" }}>
         <label>
           Speed (ms):{" "}
@@ -59,7 +81,7 @@ function App() {
         </label>
       </div>
       <div style={{ position: "fixed", bottom: "10px", left: "10px", fontSize: "1em" }}>
-        Current Timer: {currentTimer}ms
+        Total Time: {totalTime}ms
       </div>
     </div>
   );
