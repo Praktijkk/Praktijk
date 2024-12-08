@@ -18,7 +18,7 @@ const StringFlasher = ({ speed, level, totalTimer, currentTimer, onSequenceEnd }
   }, [currentTimer, level, onSequenceEnd]);
 
   const getColor = () => {
-    return currentTimer >= totalTimer / 2 ? "red" : "black";
+    return currentTimer >= totalTimer / 2 ? "white" : "black";
   };
 
   return (
