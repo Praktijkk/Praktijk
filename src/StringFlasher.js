@@ -17,10 +17,14 @@ const StringFlasher = ({ speed, level, totalTimer, currentTimer, onSequenceEnd }
     }
   }, [currentTimer, level, onSequenceEnd]);
 
+  const getColor = () => {
+    return currentTimer >= totalTimer / 2 ? "red" : "black";
+  };
+
   return (
     <div style={{
       fontSize: "2em", textAlign: "center",
-      marginTop: "20px", height: "100px", marginBottom: "20px", color: currentTimer >= totalTimer / 2 ? "white" : "black"
+      marginTop: "20px", height: "100px", marginBottom: "20px", color: getColor()
     }}>
       {currentString}
     </div>
