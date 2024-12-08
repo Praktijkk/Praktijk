@@ -76,21 +76,23 @@ const cvccWords = ["hoofd", "leeft", "beeft", "weeft", "hoeft", "dooft", "zoeft"
 
 const vcWords = cvcWords.map(word => word.slice(1)); // Remove the first letter for VC
 const cvWords = cvcWords.map(word => word.slice(0, -1)); // Remove the last letter for CV
+const vccWords = cvccWords.map(word => word.slice(1)); // Remove the first letter for VCC
+const ccvWords = ccvcWords.map(word => word.slice(0, -1)); // Remove the last letter for CCV
 
 const generateStringForLevel = (level) => {
   switch (level) {
     case 1:
       return getRandomVowel();
     case 2:
-      return vcWords[Math.floor(Math.random() * vcWords.length)]; // Use VC words for level 2
+        return cvWords[Math.floor(Math.random() * cvWords.length)]; // Use CV words for level 2
     case 3:
-      return cvWords[Math.floor(Math.random() * cvWords.length)]; // Use CV words for level 3
+        return vcWords[Math.floor(Math.random() * vcWords.length)]; // Use VC words for level 3
     case 4:
-      return cvcWords[Math.floor(Math.random() * cvcWords.length)]; // Use CVC words for level 4
+      return ccvWords[Math.floor(Math.random() * ccvWords.length)]; // Use CCV words for level 4
     case 5:
-      return ccvcWords[Math.floor(Math.random() * ccvcWords.length)]; // Use CVCC words for level 5
+        return vccWords[Math.floor(Math.random() * vccWords.length)]; // Use VCC words for level 5
     case 6:
-      return cvccWords[Math.floor(Math.random() * cvccWords.length)]; // Use CVCC words for level 6
+      return cvcWords[Math.floor(Math.random() * cvcWords.length)]; // Use CVC words for level 6
     default:
       return "";
   }
