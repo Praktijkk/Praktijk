@@ -41,6 +41,7 @@ function App() {
             <option value={3}>Level 3: Consonant-Vowel</option>
             <option value={4}>Level 4: Consonant-Vowel-Consonant</option>
             <option value={5}>Level 5: Consonant-Consonant-Vowel-Consonant</option>
+            <option value={6}>Level 6: Consonant-Vowel-Consonant-Consonant</option>
           </select>
         </label>
       </div>
